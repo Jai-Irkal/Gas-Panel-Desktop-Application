@@ -1,0 +1,51 @@
+export type Zone = {
+    id: number;
+    zone_number: string;
+    zone_text: string;
+    zone_status: string;
+    zone_routing?: string;
+}
+
+export type LedState = {
+    zone1_led_sts: number;
+    zone2_led_sts: number;
+    zone3_led_sts: number;
+    zone4_led_sts: number;
+    zone5_led_sts: number;
+    zone6_led_sts: number;
+    zone7_led_sts: number;
+    zone8_led_sts: number;
+    zone9_led_sts: number;
+    zone10_led_sts: number;
+    zone11_led_sts: number;
+    zone12_led_sts: number;
+    zone13_led_sts: number;
+    zone14_led_sts: number;
+    zone15_led_sts: number;
+    zone16_led_sts: number;
+    zone17_led_sts: number;
+    zone18_led_sts: number;
+    zone19_led_sts: number;
+    zone20_led_sts: number;
+    zone21_led_sts: number;
+    zone22_led_sts: number;
+    zone23_led_sts: number;
+    zone24_led_sts: number;
+    zone25_led_sts: number;
+    zone26_led_sts: number;
+    zone27_led_sts: number;
+    zone28_led_sts: number;
+    zone29_led_sts: number;
+    zone30_led_sts: number;
+    zone31_led_sts: number;
+    zone32_led_sts: number;
+    disabled_led: number;
+    test_led: number;
+    delay_led: number;
+    fire: number;
+    general_fault: number;
+    system_fault: number;
+    sounder_dis_fau: number;
+    routing_fau_dis: number;
+    alarm_routing: number;
+};
