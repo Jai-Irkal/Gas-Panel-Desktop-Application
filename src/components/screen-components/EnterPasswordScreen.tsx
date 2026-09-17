@@ -20,7 +20,7 @@ const EnterPasswordScreen: React.FC<EnterPasswordScreenProps> = ({ screen, setSc
 
       if (screen.level === 1 && entered === CORRECT_PASSWORD_lEVEL_2) {
         setValues(["", "", "", "", "", ""]);
-        setScreen({ level: 2, page: "PASSWORD_SUCCESS" });
+        setScreen({ level: 1, page: "PASSWORD_SUCCESS" });
 
       } else if (screen.level === 2 && entered === CORRECT_PASSWORD_lEVEL_1) {
         setValues(["", "", "", "", "", ""]);

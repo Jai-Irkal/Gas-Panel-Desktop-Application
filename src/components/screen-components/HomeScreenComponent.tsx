@@ -12,14 +12,12 @@ interface HomeScreenComponentProps {
     screen: { level: number; page: string };
     setScreen: (screen: { level: number; page: string }) => void;
     systemMessage: string;
+    releaseMode: "auto" | "manual";
 }
 
-const HomeScreenComponent: React.FC<HomeScreenComponentProps> = ({ screen, setScreen, systemMessage }) => {
+const HomeScreenComponent: React.FC<HomeScreenComponentProps> = ({ screen, setScreen, systemMessage, releaseMode }) => {
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const date = formatDate(new Date());
-    const statusLedState = {
-        deviceStatus:0
-    };
     // const {
     //         statusLedState,
     //         applyStatusChanges,
@@ -58,7 +56,7 @@ const HomeScreenComponent: React.FC<HomeScreenComponentProps> = ({ screen, setSc
     //         socket.disconnect();
     //     };
     // }, [statusLedState]);
-    
+
 
     return (
         <>
@@ -70,15 +68,11 @@ const HomeScreenComponent: React.FC<HomeScreenComponentProps> = ({ screen, setSc
                 <h5>{date}</h5>
             </div>
             <div className="px-8 text-[#324200FF] font-bold text-center 2xl:mt-[-10px] -mt-[18px]">
-                {
-                    systemMessage ? <h5>{systemMessage}</h5> :
-                    statusLedState.deviceStatus == 0 ? <h5 className='2xl:ml-20'>SYSTEM IN NORMAL</h5> : 
-                    statusLedState.deviceStatus == 1 ? <h5 className='2xl:ml-20'>SYSTEM IN NORMAL</h5> :
-                    statusLedState.deviceStatus == 2 ? <h5 className='-ml-8 2xl:ml-17'>SYSTEM IN COMISSIONING</h5> :
-                    statusLedState.deviceStatus == 3 ? <h5 className='2xl:ml-22'>SYSTEM IN FAULT</h5> :
-                    statusLedState.deviceStatus == 4 ? <h5 className='2xl:ml-25'>SYSTEM IN FIRE</h5> :
-                    <h5 className='ml-4 2xl:ml-25'>EVACUATION</h5>
-                }
+                <h5>
+                    {systemMessage !== "SYSTEM IN NORMAL"
+                        ? systemMessage
+                        : `SYSTEM IN ${releaseMode === "auto" ? "AUTOMATIC MODE" : "MANUAL MODE"}`}
+                </h5>
                 {/* <h5>IN-LEVEL - {screen.level}</h5> */}
             </div>
             <div className="px-8 text-[#324200FF] font-bold text-center mt-[10px]">

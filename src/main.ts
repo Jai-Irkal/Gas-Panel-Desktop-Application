@@ -71,6 +71,9 @@ ipcMain.on('controller-update', (_event, update) => {
   if (panelWindow && !panelWindow.isDestroyed()) {
     panelWindow.webContents.send('controller-update', update);
   }
+  if (controllerWindow && !controllerWindow.isDestroyed()) {
+    controllerWindow.webContents.send('controller-update', update);
+  }
 });
 
 app.on('ready', () => {

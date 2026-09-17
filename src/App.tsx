@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 // import GasPanelUI from './components/GasPanelUI';
-import PanelLayout, { initialLedSnapshot } from './Layouts/PanelLayout';
+import PanelLayout from './Layouts/PanelLayout';
 import { useZoneLedState } from './hooks/useZoneLedState';
 import { useStatusLedState } from './hooks/useLedState';
 import { zoneInitialSnapshot } from './types/zoneIntialSnapshot';
@@ -24,6 +24,7 @@ const App: React.FC = () => {
     const [screen, setScreen] = useState({ level: 0, page: "INITIALIZING" });
     const [isBuzzerSilenced, setIsBuzzerSilenced] = useState(false);
     const [systemMessage, setSystemMessage] = useState("SYSTEM IN NORMAL");
+    const [releaseMode, setReleaseMode] = useState<"manual" | "auto">("auto");
 
     React.useEffect(() => {
         if (systemMessage === "SYSTEM IN NORMAL") return;
@@ -38,13 +39,11 @@ const App: React.FC = () => {
     const {
         zoneLedState,
         applyZoneChanges,
-        resetZoneLedState
     } = useZoneLedState();
 
     const {
         statusLedState,
         applyStatusChanges,
-        resetStatusLedState
     } = useStatusLedState();
 
     React.useEffect(() => {
@@ -95,8 +94,14 @@ const App: React.FC = () => {
         setMoreAlarmState(0);
         setFireState(0);
         setEvacuationDisabled(0);
-        applyZoneChanges(zoneInitialSnapshot);
-        applyStatusChanges(initialLedSnapshot)
+        const fireZoneReset: Partial<typeof zoneInitialSnapshot> = {};
+        Object.entries(zoneLedState).forEach(([key, value]) => {
+            if (String(value) === "2") {
+                fireZoneReset[key as keyof typeof zoneInitialSnapshot] = 32;
+            }
+        });
+        applyZoneChanges(fireZoneReset);
+        window.electronAPI?.sendControllerUpdate({ zones: fireZoneReset });
     };
 
     const logMoreAlarmFunction = () => {
@@ -139,6 +144,8 @@ const App: React.FC = () => {
                 isBuzzerSilenced={isBuzzerSilenced}
                 systemMessage={systemMessage}
                 setSystemMessage={setSystemMessage}
+                releaseMode={releaseMode}
+                setReleaseMode={setReleaseMode}
                 zoneLedState={zoneLedState}
                 statusLedState={statusLedState}
                 applyZoneLedSocketChanges={applyZoneChanges}

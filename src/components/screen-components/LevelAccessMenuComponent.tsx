@@ -1,4 +1,5 @@
 import React from 'react'
+import level2icon from '../../../public/ui-elements/two-level-panel-icon.svg';
 
 interface LevelAccesMenuComponentProps {
     screen: { level: number; page: string };
@@ -8,9 +9,8 @@ interface LevelAccesMenuComponentProps {
 const LevelAccessMenuComponent: React.FC<LevelAccesMenuComponentProps> = ({screen, setScreen}) => {
     return (
         <>
-            <div className="px-8 py-5 text-[#324200FF] font-bold flex justify-start gap-50">
-                <h5>LEVEL-{screen.level}</h5>
-                <h5>MENU SCREEN</h5>
+            <div className="px-8 py-5 text-[#324200FF] font-bold flex justify-center gap-50">
+                <h5>SELECT USER LEVEL</h5>
             </div>
             <div className="px-8 text-[#324200FF] font-bold flex justify-around mt-[15px]">
                 <div className="flex items-center gap-3">
@@ -22,7 +22,7 @@ const LevelAccessMenuComponent: React.FC<LevelAccesMenuComponentProps> = ({scree
                         onClick={() => setScreen({ level: 1, page: "ENTER_PASSWORD" })}
                     >
                         <img
-                            src="/ui-elements/two-level-panel-icon.svg"
+                            src={level2icon}
                             alt="Caution Icon"
                             className="inline-block w-7 h-7"
                         />

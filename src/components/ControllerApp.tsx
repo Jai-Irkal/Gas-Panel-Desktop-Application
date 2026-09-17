@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import type { ControllerStatusKey } from "../types/controller";
+import React, { useEffect, useState } from "react";
+import type { ControllerStatusKey, ControllerUpdate } from "../types/controller";
 
-const API_BASE_URL = "http://localhost:3000/api"
+const API_BASE_URL = "http://ec2-54-234-189-184.compute-1.amazonaws.com/api"
 
 const systemControls: Array<{
     key: ControllerStatusKey;
@@ -15,9 +15,9 @@ const systemControls: Array<{
         { key: "battery_fault_led", label: "Battery Fault", color: "#f4d21a", eventId: 2001 },
         { key: "system_fault", label: "System Fault", color: "#f4d21a", eventId: 2001 },
         { key: "NAC_fault", label: "NAC Fault", color: "#f4d21a", eventId: 2001 },
-        { key: "manual_release", label: "Manual Release", color: "#f4d21a", eventId: 3002 },
-        { key: "pre_release", label: "Pre Release", color: "#f4d21a", eventId: 3002 },
-        { key: "released_led", label: "Released", color: "#f04432", eventId: 3001 },
+        { key: "manual_release", label: "Manual Release", color: "#f4d21a", eventId: 3001 },
+        { key: "pre_release", label: "Pre Release", color: "#f4d21a", eventId: 3001 },
+        { key: "released_led", label: "Released", color: "#f4d21a", eventId: 3001 },
         { key: "abort_led", label: "Abort", color: "#f4d21a", eventId: 3001 },
         { key: "pressure_fault_led", label: "Pressure Fault", color: "#f4d21a", eventId: 2001 },
         { key: "RAC_fault_led", label: "RAC Fault", color: "#f4d21a", eventId: 2001 },
@@ -58,12 +58,29 @@ export default function ControllerApp() {
     const [activeStatuses, setActiveStatuses] = useState<Partial<Record<ControllerStatusKey, number>>>({});
     const [zoneValues, setZoneValues] = useState<Record<number, number>>({});
 
+    useEffect(() => {
+        return window.electronAPI?.onControllerUpdate((update: ControllerUpdate) => {
+            if (update.zones) {
+                setZoneValues((current) => {
+                    const next = { ...current };
+                    Object.entries(update.zones ?? {}).forEach(([key, value]) => {
+                        const zoneNumber = Number(key.replace("zone", "").replace("_led_sts", ""));
+                        if (Number.isInteger(zoneNumber) && typeof value === "number") {
+                            next[zoneNumber] = value;
+                        }
+                    });
+                    return next;
+                });
+            }
+        });
+    }, []);
+
     const sendStatus = (key: ControllerStatusKey, eventId: number, label: string,) => {
         const nextValue = activeStatuses[key] ? 0 : 1;
         setActiveStatuses((current) => ({ ...current, [key]: nextValue, }),);
         window.electronAPI?.sendControllerUpdate({ status: { [key]: nextValue, }, });
         if (nextValue === 1) {
-            postLog(eventId, label, 0,);
+            postLog(eventId, label, 1,);
         }
     };
 

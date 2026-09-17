@@ -1,4 +1,6 @@
-import React from 'react'
+import React from 'react';
+import userLockIcon from "../../../public/ui-elements/user-lock-icon.svg";
+import panelIcon from "../../../public/ui-elements/log-panel-icon.svg";
 
 interface MenuScreenComponentProps {
     screen: { level: number; page: string };
@@ -22,7 +24,7 @@ const MenuScreenComponent: React.FC<MenuScreenComponentProps> = ({ screen, setSc
                         onClick={() => setScreen({ level: 1, page: "ACCESS_LEVEL" })}
                     >
                         <img
-                            src="/public/ui-elements/user-lock-icon.svg"
+                            src={userLockIcon}
                             alt="User Icon"
                             className="inline-block w-7 h-7 ml-1"
                         />
@@ -35,7 +37,7 @@ const MenuScreenComponent: React.FC<MenuScreenComponentProps> = ({ screen, setSc
                         onClick={() => setScreen({ level: 1, page: "ACCESS_LOGS" })}
                     >
                         <img
-                            src="/public/ui-elements/log-panel-icon.svg"
+                            src={panelIcon}
                             alt="User Icon"
                             className="inline-block w-7 h-7"
                         />

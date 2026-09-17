@@ -27,6 +27,11 @@ import ManuaReleaseScreenComponent from "./screen-components/ManualReleaseScreen
 import ReleaseAbortedScreen from "./screen-components/ReleaseAbortedScreen";
 import GasReleasedScreen from "./screen-components/GasReleasedScreen";
 import MenuScreenTwo from "./screen-components/level-2/MenuScreenTwo";
+import ZoneEnableDisable from "./screen-components/level-2/ZoneEnableDisableScreen";
+import TestMenuScreen from "./screen-components/level-2/TestMenuScreen";
+import ZoneTestScreen from "./screen-components/level-2/ZoneTestScreen";
+import NACTestScreen from "./screen-components/level-2/NACTestScreen";
+import AboutScreen from "./screen-components/level-2/About";
 // import DeviceEnableDisable from "./screen components/level-2/info-screens/DeviceEnableDisable";
 // import ZoneEnableDisable from "./screen components/level-2/info-screens/ZoneEnableDisable";
 // import ZoneInfoScreen from "./screen components/level-2/info-screens/ZoneInfoScreen";
@@ -45,6 +50,7 @@ interface LcdScreenProps {
     }; // Add more as needed
     setScreen: (screen: { level: number, page: string }) => void;
     systemMessage: string;
+    releaseMode: "auto" | "manual";
 }
 
 const AnimatedDots = ({ onFinish }: { onFinish: () => void }) => {
@@ -72,7 +78,7 @@ const formatDate = (date: Date) => {
     return `${day}-${month}-${year}`;
 };
 
-const LcdScreen: React.FC<LcdScreenProps> = ({ screen, setScreen, isOn, setIsOn, systemMessage }) => {
+const LcdScreen: React.FC<LcdScreenProps> = ({ screen, setScreen, isOn, setIsOn, systemMessage, releaseMode }) => {
 
     const [time, setTime] = useState(() => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     const [date, setDate] = useState(() => formatDate(new Date()));
@@ -152,7 +158,7 @@ const LcdScreen: React.FC<LcdScreenProps> = ({ screen, setScreen, isOn, setIsOn,
         if (screen.level === 1) {
             if (screen.page === "HOME") {
                 return (
-                    <HomeScreenComponent screen={screen} setScreen={setScreen} systemMessage={systemMessage} />
+                    <HomeScreenComponent screen={screen} setScreen={setScreen} systemMessage={systemMessage} releaseMode={releaseMode} />
                 )
             } else if (screen.page === "MENU") {
                 return (
@@ -211,7 +217,7 @@ const LcdScreen: React.FC<LcdScreenProps> = ({ screen, setScreen, isOn, setIsOn,
         } else if (screen.level === 2) {
             if (screen.page === "HOME_LEVEL_2") {
                 return (
-                    <HomeScreenComponent screen={screen} setScreen={setScreen} systemMessage={systemMessage} />
+                    <HomeScreenComponent screen={screen} setScreen={setScreen} systemMessage={systemMessage} releaseMode={releaseMode} />
                 )
             }
             else if (screen.page === "ENTER_PASSWORD") {
@@ -240,10 +246,46 @@ const LcdScreen: React.FC<LcdScreenProps> = ({ screen, setScreen, isOn, setIsOn,
                 return (
                     <GasReleasedScreen screen={{ level: screen.level, page: "GAS_RELEASED" }} setScreen={setScreen} />
                 )
-            }
-            else if (screen.page === "MENU") {
+            } else if (screen.page === "ACCESS_LOGS") {
+                return (
+                    <LogMenuScreen screen={screen} setScreen={setScreen} />
+                )
+            } else if (screen.page === "MENU") {
                 return (
                     <MenuScreenTwo screen={{ level: screen.level, page: "MENU" }} setScreen={setScreen} />
+                )
+            }
+            else if (screen.page === "FIRE") {
+                return (
+                    <LogScreen screen={{ level: screen.level, page: "FIRE" }} setScreen={setScreen} />
+                );
+            } else if (screen.page === "FAULT") {
+                return (
+                    <LogScreen screen={{ level: screen.level, page: "FAULT" }} setScreen={setScreen} />
+                )
+            } else if (screen.page === "ALL") {
+                return (
+                    <LogScreen screen={{ level: screen.level, page: "ALL" }} setScreen={setScreen} />
+                )
+            } else if (screen.page === "ZONE_ENABLE_DISABLE") {
+                return (
+                    <ZoneEnableDisable screen={{ level: screen.level, page: "ZONE_ENABLE_DISABLE" }} setScreen={setScreen} />
+                )
+            } else if (screen.page === "TEST_MENU") {
+                return (
+                    <TestMenuScreen screen={{ level: screen.level, page: "TEST_MENU" }} setScreen={setScreen} />
+                )
+            } else if (screen.page === "ZONE_TEST") {
+                return (
+                    <ZoneTestScreen screen={{ level: screen.level, page: "ZONE_TEST" }} setScreen={setScreen} />
+                )
+            } else if (screen.page === "NAC_TEST") {
+                return (
+                    <NACTestScreen screen={{ level: screen.level, page: "NAC_TEST" }} setScreen={setScreen} />
+                )
+            } else if (screen.page === "ABOUT") {
+                return (
+                    <AboutScreen screen={{ level: screen.level, page: "ABOUT" }} setScreen={setScreen} />
                 )
             }
             //else if (screen.page === "MENU") {

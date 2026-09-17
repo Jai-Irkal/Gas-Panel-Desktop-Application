@@ -4,6 +4,7 @@ import {
     getDeviceTypeSubtypeText,
 } from "../../util/functions";
 import React, { useCallback, useEffect, useState } from "react";
+import backIcon from '../../../public/ui-elements/back-arrow-panel-icon.svg';
 
 interface LogScreenProps {
     screen: {
@@ -55,9 +56,9 @@ type LoadingState = {
     websocketConnected: boolean;
 };
 
-const API_BASE_URL = "http://localhost:3000/api";
+const API_BASE_URL = "http://ec2-54-234-189-184.compute-1.amazonaws.com/api";
 
-const SOCKET_URL = "http://localhost:3000/device-logs";
+const SOCKET_URL = "http://ec2-54-234-189-184.compute-1.amazonaws.com/device-logs";
 
 const LogScreen: React.FC<LogScreenProps> = ({
     screen,
@@ -400,7 +401,7 @@ const LogScreen: React.FC<LogScreenProps> = ({
                         }
                     >
                         <img
-                            src="public/ui-elements/back-arrow-panel-icon.svg"
+                            src={backIcon}
                             alt="Back"
                             className="inline-block w-7 h-7"
                         />
