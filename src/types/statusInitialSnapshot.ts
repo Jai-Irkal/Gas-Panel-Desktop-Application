@@ -1,5 +1,5 @@
 export const statusInitialSnapshot = {
-    system_on:0,
+    system_on: 1,
     silenced_led:0,
     mains_fault_led:0,
     battery_fault_led:0,

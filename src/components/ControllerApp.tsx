@@ -55,10 +55,11 @@ type LogPayload = {
 };
 
 export default function ControllerApp() {
-    const [activeStatuses, setActiveStatuses] = useState<Partial<Record<ControllerStatusKey, number>>>({});
+    const [activeStatuses, setActiveStatuses] = useState<Partial<Record<ControllerStatusKey, number>>>({ system_on: 1 });
     const [zoneValues, setZoneValues] = useState<Record<number, number>>({});
 
     useEffect(() => {
+        window.electronAPI?.sendControllerUpdate({ status: { system_on: 1 } });
         return window.electronAPI?.onControllerUpdate((update: ControllerUpdate) => {
             if (update.zones) {
                 setZoneValues((current) => {
@@ -76,6 +77,9 @@ export default function ControllerApp() {
     }, []);
 
     const sendStatus = (key: ControllerStatusKey, eventId: number, label: string,) => {
+        if (key === "system_on") {
+            return;
+        }
         const nextValue = activeStatuses[key] ? 0 : 1;
         setActiveStatuses((current) => ({ ...current, [key]: nextValue, }),);
         window.electronAPI?.sendControllerUpdate({ status: { [key]: nextValue, }, });
@@ -160,13 +164,15 @@ export default function ControllerApp() {
                     <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-[#d5dbe3]">System statuses</h2>
                     <div className="grid grid-cols-2 gap-1.5">
                         {systemControls.map(({ key, label, color, eventId }) => {
-                            const active = Boolean(activeStatuses[key]);
+                            const isSystemOn = key === "system_on";
+                            const active = isSystemOn || Boolean(activeStatuses[key]);
                             return (
                                 <button
                                     key={key}
                                     type="button"
                                     onClick={() => sendStatus(key, eventId, label)}
-                                    className={`flex min-h-9 items-center justify-between rounded-md border px-2 py-1.5 text-left text-xs transition-colors ${active ? "border-white bg-[#3c4d63]" : "border-[#536174] bg-[#202938]"}`}
+                                    disabled={isSystemOn}
+                                    className={`flex min-h-9 items-center justify-between rounded-md border px-2 py-1.5 text-left text-xs transition-colors ${active ? "border-white bg-[#3c4d63]" : "border-[#536174] bg-[#202938]"} ${isSystemOn ? "cursor-default" : ""}`}
                                 >
                                     <span>{label}</span>
                                     <span className="h-3 w-3 rounded-full border border-[#111]" style={{ backgroundColor: active ? color : "#6f7883" }} />

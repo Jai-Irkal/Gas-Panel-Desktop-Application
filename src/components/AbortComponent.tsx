@@ -8,7 +8,7 @@ interface ExtinguishantReleaseProps {
   onClick?: () => void;
 }
 
-const ExtinguishantRelease = ({
+const AbortComponent = ({
   variant = "pull-down",
   onPress,
   onClick,
@@ -202,12 +202,10 @@ const ExtinguishantRelease = ({
             `}
           >
             {isRectangular ? (
-              isPressed ? "RELEASE ESTINGUISHMENT" : "ESTINGUISHMENT RELEASE"
+              isPressed ? "ABORT RELEASE" : "ABORT"
             ) : (
               <>
-                EXTINGUISHANT
-                <br />
-                RELEASE
+                ABORT
               </>
             )}
           </span>
@@ -217,4 +215,4 @@ const ExtinguishantRelease = ({
   );
 };
 
-export default ExtinguishantRelease;
+export default AbortComponent;

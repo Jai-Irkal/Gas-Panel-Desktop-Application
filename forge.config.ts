@@ -21,19 +21,26 @@ const config: ForgeConfig = {
 
     // Windows executable name
     executableName: "GasPanel",
+
+    // IMPORTANT: Application icon
+    // Do NOT include .ico extension here
+    icon: path.resolve(__dirname, "public/icon/emcus"),
   },
 
   rebuildConfig: {},
 
   makers: [
     // Windows Squirrel installer
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      name:"GasPanel",
+      authors:"Emcus Technology Solutions Pvt Ltd",
+    }),
 
     // Windows MSI installer
     new MakerWix({
       name: "GasPanel",
       manufacturer: "EMCUS Technology Solutions Pvt Ltd",
-      icon: path.resolve(__dirname, "public/icon/favicon.ico"),
+      icon: path.resolve(__dirname, "public/icon/emcus.ico"),
     }),
 
     // macOS ZIP
