@@ -34,6 +34,7 @@ const config: ForgeConfig = {
     new MakerSquirrel({
       name:"GasPanel",
       authors:"Emcus Technology Solutions Pvt Ltd",
+      loadingGif: path.resolve(__dirname, "public/icon/transparent.gif"),
     }),
 
     // Windows MSI installer

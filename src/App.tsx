@@ -9,6 +9,7 @@ import { zoneInitialSnapshot } from './types/zoneIntialSnapshot';
 import { statusInitialSnapshot } from './types/statusInitialSnapshot';
 import type { ControllerUpdate } from './types/controller';
 import { getAssetUrl } from './util/assetPath';
+import SplashScreen from './components/SplashScreen';
 
 const App: React.FC = () => {
 
@@ -24,6 +25,7 @@ const App: React.FC = () => {
     const [fireState, setFireState] = useState<number>(0);
     const [evacuationDisabled, setEvacuationDisabled] = useState<number>(0);
     const [screen, setScreen] = useState({ level: 0, page: "INITIALIZING" });
+    const [showSplash, setShowSplash] = useState(true);
     const [isBuzzerSilenced, setIsBuzzerSilenced] = useState(false);
     const [lampTestActive, setLampTestActive] = useState(false);
     const [systemMessage, setSystemMessage] = useState("SYSTEM IN NORMAL");
@@ -160,6 +162,18 @@ const App: React.FC = () => {
             setFireState(0);
             setEvacuationDisabled(0)
         }
+    }
+
+    useEffect(() => {
+        const splashTimeout = window.setTimeout(() => {
+            setShowSplash(false);
+        }, 3000);
+
+        return () => window.clearTimeout(splashTimeout);
+    }, []);
+
+    if (showSplash) {
+        return <SplashScreen />;
     }
 
     return (

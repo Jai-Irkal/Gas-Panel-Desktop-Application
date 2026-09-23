@@ -166,8 +166,11 @@ export default function PanelLayout({
                         </aside>
 
                         <div className="order-1 col-span-2 flex min-w-0 flex-col items-center gap-5 lg:order-2 lg:col-span-1">
-                            <header className="flex w-full max-w-[660px] items-center justify-end px-[5px] text-[#222]">
-                                {/* <span className="text-lg font-bold tracking-wide sm:text-2xl">EMCUS</span> */}
+                            <header className="flex w-full max-w-[660px] items-center justify-between px-[5px] text-[#222]">
+                                <div className="flex flex-col">
+                                    <span className="text-[18px] font-bold tracking-wide">Panel Version</span>
+                                    <p className="text-[10px] font-semibold uppercase tracking-wider">v1.0.2</p>
+                                </div>
                                 <div className="text-right">
                                     <h1 className="text-sm font-bold uppercase sm:text-lg">GP-400 R Gas Release Panel</h1>
                                     <p className="text-[10px] font-semibold uppercase tracking-wider">UL/FM Approved</p>
