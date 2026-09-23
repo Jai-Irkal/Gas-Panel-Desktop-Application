@@ -2,7 +2,9 @@ import React from "react";
 import AbortComponent from "../components/AbortComponent";
 import LcdScreen from "../components/LcdScreen";
 import ExtinguishantRelease from "../components/EstingushReleaseComponent";
-const EmcusLogo = "/logo/emcus-logo.png";
+import { getAssetUrl } from "../util/assetPath";
+
+const EmcusLogo = getAssetUrl("logo/emcus-logo.png");
 
 type PanelLayoutProps = {
     readonly zoneLedState: Record<string, number | string | boolean>;

@@ -1,6 +1,8 @@
 import React from 'react';
-const userLockIcon = "/ui-elements/user-lock-icon.svg";
-const panelIcon = "/ui-elements/log-panel-icon.svg";
+import { getAssetUrl } from '../../util/assetPath';
+
+const userLockIcon = getAssetUrl("ui-elements/user-lock-icon.svg");
+const panelIcon = getAssetUrl("ui-elements/log-panel-icon.svg");
 
 interface MenuScreenComponentProps {
     screen: { level: number; page: string };

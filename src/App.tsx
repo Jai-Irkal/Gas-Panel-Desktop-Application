@@ -8,6 +8,7 @@ import { useStatusLedState } from './hooks/useLedState';
 import { zoneInitialSnapshot } from './types/zoneIntialSnapshot';
 import { statusInitialSnapshot } from './types/statusInitialSnapshot';
 import type { ControllerUpdate } from './types/controller';
+import { getAssetUrl } from './util/assetPath';
 
 const App: React.FC = () => {
 
@@ -53,7 +54,7 @@ const App: React.FC = () => {
     const fireActive = fireState > 0 || Object.values(zoneLedState).some((value) => Number(value) === 2);
 
     useEffect(() => {
-        const beepAudio = beepAudioRef.current ?? new Audio("/audio/beep.mp3");
+        const beepAudio = beepAudioRef.current ?? new Audio(getAssetUrl("audio/beep.mp3"));
         beepAudio.loop = true;
         beepAudioRef.current = beepAudio;
 

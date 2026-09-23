@@ -1,5 +1,7 @@
 import React from 'react'
-const level2icon = "/ui-elements/two-level-panel-icon.svg";
+import { getAssetUrl } from '../../util/assetPath';
+
+const level2icon = getAssetUrl("ui-elements/two-level-panel-icon.svg");
 
 interface LevelAccesMenuComponentProps {
     screen: { level: number; page: string };

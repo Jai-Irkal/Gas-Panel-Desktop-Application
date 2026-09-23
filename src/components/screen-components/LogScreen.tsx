@@ -3,8 +3,10 @@ import {
     getDeviceTypeSubtypeText,
 } from "../../util/functions";
 import React, { useCallback, useEffect, useState } from "react";
-const backIcon = "/ui-elements/back-arrow-panel-icon.svg";
 import { getLocalLogs, subscribeToLocalLogs, type LocalLog } from "../../util/localLogs";
+import { getAssetUrl } from "../../util/assetPath";
+
+const backIcon = getAssetUrl("ui-elements/back-arrow-panel-icon.svg");
 
 interface LogScreenProps {
     screen: {
