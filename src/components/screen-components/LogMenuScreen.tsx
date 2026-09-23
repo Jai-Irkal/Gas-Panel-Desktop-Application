@@ -1,7 +1,7 @@
 import React from 'react'
-import cautionIcon from "../../../public/ui-elements/caution-panel-icon.svg";
-import fireIcon from '../../../public/ui-elements/fire-panel-icon.svg';
-import bothIcon from '../../../public/ui-elements/both-panel-icon.svg';
+const cautionIcon = "/ui-elements/caution-panel-icon.svg";
+const fireIcon = "/ui-elements/fire-panel-icon.svg";
+const bothIcon = "/ui-elements/both-panel-icon.svg";
 
 interface LogMenuScreenProps {
     screen: { level: number; page: string };

@@ -2,7 +2,7 @@ import React from "react";
 import AbortComponent from "../components/AbortComponent";
 import LcdScreen from "../components/LcdScreen";
 import ExtinguishantRelease from "../components/EstingushReleaseComponent";
-import EmcusLogo from "../../public/logo/emcus-logo.png";
+const EmcusLogo = "/logo/emcus-logo.png";
 
 type PanelLayoutProps = {
     readonly zoneLedState: Record<string, number | string | boolean>;
@@ -274,6 +274,7 @@ export default function PanelLayout({
                                 <div className="bg-white rounded-md p-1 mt-[90px]">
                                     <img
                                         src={EmcusLogo}
+                                        alt="Emcus"
                                     />
                                 </div>
                             </div>

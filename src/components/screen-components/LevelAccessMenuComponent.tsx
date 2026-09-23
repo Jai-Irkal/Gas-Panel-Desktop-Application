@@ -1,5 +1,5 @@
 import React from 'react'
-import level2icon from '../../../public/ui-elements/two-level-panel-icon.svg';
+const level2icon = "/ui-elements/two-level-panel-icon.svg";
 
 interface LevelAccesMenuComponentProps {
     screen: { level: number; page: string };

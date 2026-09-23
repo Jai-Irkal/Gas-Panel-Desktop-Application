@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import type { ControllerStatusKey, ControllerUpdate } from "../types/controller";
+import { addLocalLog } from "../util/localLogs";
 
-const API_BASE_URL = "http://ec2-54-234-189-184.compute-1.amazonaws.com/api"
+// const API_BASE_URL = "http://ec2-54-234-189-184.compute-1.amazonaws.com/api";
 
 const systemControls: Array<{
     key: ControllerStatusKey;
@@ -108,7 +109,7 @@ export default function ControllerApp() {
             u8_zone_text: zoneNumber > 0 ? `Zone ${zoneNumber}` : "System",
             u8_zone_number: zoneNumber,
             u8_node_address: 1,
-            u8_device_address: zoneNumber > 0 ? zoneNumber : 0,
+            u8_device_address: Math.max(zoneNumber, 0),
             u8_device_type: zoneNumber > 0 ? 1 : 0,
             u8_device_sub_type: zoneNumber > 0 ? 1 : 0,
             u8_date: now.getDate(),
@@ -128,26 +129,25 @@ export default function ControllerApp() {
         return log;
     };
 
-    const postLog = async (eventId: number, deviceText: string, zoneNumber: number,) => {
-        try {
-            const log = createLog(eventId, deviceText, zoneNumber,);
-            console.log("Posting log:", log);
-            const response = await fetch(`${API_BASE_URL}/device-logs`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", },
-                    body: JSON.stringify(log),
-                },);
-            if (!response.ok) {
-                throw new Error(`Failed to post log: HTTP ${response.status}`,);
-            }
-            const savedLog = await response.json();
-            console.log("Log created successfully:", savedLog,);
-            return savedLog;
-        } catch (error) {
-            console.error("Error posting log:", error,);
-        }
+    const postLog = (eventId: number, deviceText: string, zoneNumber: number,) => {
+        const log = createLog(eventId, deviceText, zoneNumber,);
+        const savedLog = addLocalLog({ ...log, company: 0 });
+        console.log("Log saved locally:", savedLog,);
+        return savedLog;
     };
+
+    /* API log persistence retained for future backend integration:
+    const postLogToApi = async (eventId: number, deviceText: string, zoneNumber: number,) => {
+        const log = createLog(eventId, deviceText, zoneNumber,);
+        const response = await fetch(`${API_BASE_URL}/device-logs`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", },
+            body: JSON.stringify(log),
+        });
+        if (!response.ok) throw new Error(`Failed to post log: HTTP ${response.status}`);
+        return response.json();
+    };
+    */
 
     return (
         <main className="h-screen overflow-y-auto bg-[#202938] p-3 text-white">

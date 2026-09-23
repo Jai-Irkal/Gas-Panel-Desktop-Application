@@ -1,10 +1,10 @@
-import { io, Socket } from "socket.io-client";
 import {
     convertEventIdToText,
     getDeviceTypeSubtypeText,
 } from "../../util/functions";
 import React, { useCallback, useEffect, useState } from "react";
-import backIcon from '../../../public/ui-elements/back-arrow-panel-icon.svg';
+const backIcon = "/ui-elements/back-arrow-panel-icon.svg";
+import { getLocalLogs, subscribeToLocalLogs, type LocalLog } from "../../util/localLogs";
 
 interface LogScreenProps {
     screen: {
@@ -18,47 +18,16 @@ interface LogScreenProps {
     }) => void;
 }
 
-type Log = {
-    id: number;
-    u16_event_id: number;
-    log_num: number;
-    u8_device_text: string;
-    u8_zone_text?: string | null;
-    u8_zone_number: number;
-    u8_node_address: number;
-    u8_device_address: number;
-    u8_device_type: number;
-    u8_device_sub_type: number;
-    u8_date: number;
-    u8_month: number;
-    u8_year: number;
-    u8_hours: number;
-    u8_minutes: number;
-    u8_seconds: number;
-    u8_logbitoffset: number;
-    part_number?: string | null;
-    u8_spare_bytes?: number[] | null;
-    u8_serialNumber: number;
-    u16_crc: number;
-    source: string;
-    createdAt: string;
-    company: number;
-};
-
 type LogsState = {
-    all: Log[];
-    fire: Log[];
-    fault: Log[];
+    all: LocalLog[];
+    fire: LocalLog[];
+    fault: LocalLog[];
 };
 
 type LoadingState = {
     initialLoad: boolean;
     websocketConnected: boolean;
 };
-
-const API_BASE_URL = "http://ec2-54-234-189-184.compute-1.amazonaws.com/api";
-
-const SOCKET_URL = "http://ec2-54-234-189-184.compute-1.amazonaws.com/device-logs";
 
 const LogScreen: React.FC<LogScreenProps> = ({
     screen,
@@ -70,17 +39,14 @@ const LogScreen: React.FC<LogScreenProps> = ({
         fault: [],
     });
 
-    const [loading, setLoading] = useState<LoadingState>({
-        initialLoad: true,
-        websocketConnected: false,
-    });
+    const [loading, setLoading] = useState<LoadingState>({ initialLoad: true, websocketConnected: false });
 
     const [error, setError] = useState<string | null>(null);
 
     /**
      * Check whether the log is a fire log.
      */
-    const isFireLog = useCallback((log: Log) => {
+    const isFireLog = useCallback((log: LocalLog) => {
         return (
             log.u16_event_id >= 1001 &&
             log.u16_event_id <= 1007
@@ -90,260 +56,55 @@ const LogScreen: React.FC<LogScreenProps> = ({
     /**
      * Check whether the log is a fault log.
      */
-    const isFaultLog = useCallback((log: Log) => {
+    const isFaultLog = useCallback((log: LocalLog) => {
         return (
             log.u16_event_id >= 2000 &&
             log.u16_event_id <= 3000
         );
     }, []);
 
-    /**
-     * Load all logs from the backend.
-     *
-     * PostgreSQL/API is the source of truth.
-     */
+    /** Load logs from local storage. Defaults are seeded on first use. */
     const loadLogs = useCallback(async () => {
-        try {
-            console.log("Loading logs from API...");
+        setLoading((prev) => ({ ...prev, initialLoad: true }));
+        setError(null);
+        const data = getLocalLogs();
+        const fireLogs = data.filter(isFireLog);
+        const faultLogs = data.filter(isFaultLog);
 
-            setLoading((prev) => ({
-                ...prev,
-                initialLoad: true,
-            }));
+        setLogs({
+            all: data,
+            fire: fireLogs,
+            fault: faultLogs,
+        });
+        setLoading((prev) => ({ ...prev, initialLoad: false }));
+    }, [isFireLog, isFaultLog]);
 
-            setError(null);
-
-            const response = await fetch(
-                `${API_BASE_URL}/device-logs`
-            );
-
-            if (!response.ok) {
-                throw new Error(
-                    `HTTP error: ${response.status}`
-                );
-            }
-
-            const data: Log[] = await response.json();
-
-            console.log(
-                "Logs loaded from API:",
-                data
-            );
-
+    /* API loading retained for future backend integration:
+    const loadLogsFromApi = async () => {
+        const response = await fetch(`${API_BASE_URL}/device-logs`);
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+        const data: LocalLog[] = await response.json();
             const fireLogs = data.filter(isFireLog);
-
             const faultLogs = data.filter(isFaultLog);
-
             setLogs({
                 all: data,
                 fire: fireLogs,
                 fault: faultLogs,
             });
-        } catch (error) {
-            console.error(
-                "Error fetching logs:",
-                error
-            );
+    };
+    */
 
-            setError(
-                "Failed to load logs. Please try again."
-            );
-        } finally {
-            setLoading((prev) => ({
-                ...prev,
-                initialLoad: false,
-            }));
-        }
-    }, [isFireLog, isFaultLog]);
-
-    /**
-     * Add a newly received WebSocket log.
-     *
-     * Prevents duplicate logs using the database ID.
-     */
-    const addRealtimeLog = useCallback(
-        (log: Log) => {
-            console.log(
-                "New log received from WebSocket:",
-                log
-            );
-
-            setLogs((prev) => {
-                /**
-                 * Check whether this log already exists.
-                 */
-                const alreadyExists = prev.all.some(
-                    (existingLog) =>
-                        existingLog.id === log.id
-                );
-
-                if (alreadyExists) {
-                    console.log(
-                        "Log already exists:",
-                        log.id
-                    );
-
-                    return prev;
-                }
-
-                const fire = isFireLog(log);
-
-                const fault = isFaultLog(log);
-
-                return {
-                    all: [
-                        log,
-                        ...prev.all,
-                    ],
-
-                    fire: fire
-                        ? [
-                              log,
-                              ...prev.fire,
-                          ]
-                        : prev.fire,
-
-                    fault: fault
-                        ? [
-                              log,
-                              ...prev.fault,
-                          ]
-                        : prev.fault,
-                };
-            });
-        },
-        [isFireLog, isFaultLog]
-    );
-
-    /**
-     * Initial API load.
-     */
     useEffect(() => {
         loadLogs();
+        return subscribeToLocalLogs(loadLogs);
     }, [loadLogs]);
 
-    /**
-     * WebSocket connection.
-     */
-    useEffect(() => {
-        console.log(
-            "Creating Device Logs WebSocket..."
-        );
-
-        const socket: Socket = io(SOCKET_URL, {
-            transports: ["websocket"],
-
-            /**
-             * Automatically reconnect if connection drops.
-             */
-            reconnection: true,
-
-            /**
-             * Keep trying indefinitely.
-             */
-            reconnectionAttempts: Infinity,
-
-            /**
-             * First reconnect after 1 second.
-             */
-            reconnectionDelay: 1000,
-
-            /**
-             * Maximum reconnect delay.
-             */
-            reconnectionDelayMax: 5000,
-        });
-
-        /**
-         * WebSocket connected.
-         */
-        socket.on("connect", async () => {
-            console.log(
-                "Device Logs WebSocket connected:",
-                socket.id
-            );
-
-            setLoading((prev) => ({
-                ...prev,
-                websocketConnected: true,
-            }));
-
-            /**
-             * IMPORTANT:
-             *
-             * Reload logs from the API whenever the
-             * WebSocket connects/reconnects.
-             *
-             * This prevents missing logs when a log was
-             * created while the socket was disconnected.
-             */
-            await loadLogs();
-        });
-
-        /**
-         * WebSocket connection error.
-         */
-        socket.on(
-            "connect_error",
-            (error) => {
-                console.error(
-                    "Device Logs WebSocket connection error:",
-                    error
-                );
-
-                setLoading((prev) => ({
-                    ...prev,
-                    websocketConnected: false,
-                }));
-            }
-        );
-
-        /**
-         * New log received from backend.
-         */
-        socket.on(
-            "newLog",
-            (log: Log) => {
-                addRealtimeLog(log);
-            }
-        );
-
-        /**
-         * WebSocket disconnected.
-         */
-        socket.on(
-            "disconnect",
-            (reason) => {
-                console.log(
-                    "Device Logs WebSocket disconnected:",
-                    reason
-                );
-
-                setLoading((prev) => ({
-                    ...prev,
-                    websocketConnected: false,
-                }));
-            }
-        );
-
-        /**
-         * Cleanup when LogScreen unmounts.
-         */
-        return () => {
-            console.log(
-                "Cleaning up Device Logs WebSocket"
-            );
-
-            socket.removeAllListeners();
-
-            socket.disconnect();
-        };
-    }, [loadLogs, addRealtimeLog]);
+    // Backend WebSocket subscription was disabled in favor of local storage.
 
     /**
      * Get logs according to the current screen.
      */
-    const getCurrentLogs = (): Log[] => {
+    const getCurrentLogs = (): LocalLog[] => {
         switch (screen.page) {
             case "FIRE":
                 return logs.fire;
